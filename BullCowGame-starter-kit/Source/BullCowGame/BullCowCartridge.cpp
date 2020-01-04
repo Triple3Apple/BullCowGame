@@ -8,39 +8,37 @@
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay(); // needed to make game run
-
-    // welcoming the player
-    PrintLine(TEXT("MOOOOOOOOO! Welcome to Bull Cows! \n~ made for a little boy\n"));
-    PrintLine(TEXT("Please press TAB and guess \nthe 5 letter word then press \nenter..."));        // remove the hardcoded number!
-
-   
-
     SetupGame();     // setting up game
 
-    // prompt player for guess
+    PrintLine(FString::Printf(TEXT("Debug: word is: %s\n"), *HiddenWord));      // for DEBUGGING Purposes
 }
 
-void UBullCowCartridge::OnInput(const FString& Input) // When the play er hits enter
+void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
-    ClearScreen();
-
-    int32 HiddenWordLength = HiddenWord.Len();
-    
-    // checking player guess
-    if (Input == HiddenWord)
+    if (bGameOver)
     {
-        PrintLine(TEXT("Correct!"));
+        ClearScreen();
+        SetupGame();
     }
-    else
+    else  // checking player guess
     {
-        PrintLine(TEXT("Wrong!"));
-
-        if (HiddenWordLength == Input.Len())
+        if (Input == HiddenWord)
         {
-            PrintLine(TEXT("Has the correct number of letters"));
+            PrintLine(TEXT("Correct!"));
+            EndGame();
         }
-        
+        else
+        {
+            if (HiddenWord.Len() != Input.Len())
+            {
+                PrintLine(FString::Printf(TEXT("The hidden word is %i characters long, \nyou have lost!"), HiddenWord.Len()));
+                EndGame();
+            }
+        }
     }
+
+    
+    
 
     // check if isogram
     // check if it has the right number of characters
@@ -56,6 +54,17 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the play er hits e
 
 void UBullCowCartridge::SetupGame()
 {
+    bGameOver = false;
     HiddenWord = TEXT("stinky");        // HiddenWord is declared in the header class and made private
     PlayerLives = 4;
+
+    // welcoming the player
+    PrintLine(TEXT("MOOOOOOOOO! Welcome to Bull Cows!\n"));
+    PrintLine(FString::Printf(TEXT("Press TAB and guess the %i letter \nword then press enter to continue..."), HiddenWord.Len()));
+}
+
+void UBullCowCartridge::EndGame()
+{
+    bGameOver = true;
+    PrintLine(TEXT("Press ENTER to play again..."));
 }
