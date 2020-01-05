@@ -15,6 +15,14 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
+    /*
+    int32 a = 1;
+    int32 b = ++a;
+
+
+    PrintLine(TEXT("a = %i, b = %i"), a, b);
+    */
+
     if (bGameOver)
     {
         ClearScreen();
@@ -29,11 +37,25 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
         }
         else
         {
-            if (HiddenWord.Len() != Input.Len())
+            --PlayerLives;
+            PrintLine(TEXT("You have lost a life!"));
+            if (PlayerLives > 0)
             {
-                PrintLine(FString::Printf(TEXT("The hidden word is %i characters long, \nyou have lost!"), HiddenWord.Len()));
+                if (HiddenWord.Len() != Input.Len())
+                {
+                    PrintLine(FString::Printf(TEXT("Sorry, try guessing again! \nYou have %i lives remaining"), PlayerLives));
+
+                    //PrintLine(FString::Printf(TEXT("Lives Remaining: %i"), PlayerLives));
+                    //EndGame();
+                }
+            }
+            else
+            {
+                PrintLine(TEXT("GAMEOVER, no more lives remaining!"));
                 EndGame();
             }
+            
+            
         }
     }
 
@@ -56,10 +78,11 @@ void UBullCowCartridge::SetupGame()
 {
     bGameOver = false;
     HiddenWord = TEXT("stinky");        // HiddenWord is declared in the header class and made private
-    PlayerLives = 4;
+    PlayerLives = HiddenWord.Len();
 
     // welcoming the player
     PrintLine(TEXT("MOOOOOOOOO! Welcome to Bull Cows!\n"));
+    PrintLine(FString::Printf(TEXT("You have %i lives"), PlayerLives));
     PrintLine(FString::Printf(TEXT("Press TAB and guess the %i letter \nword then press enter to continue..."), HiddenWord.Len()));
 }
 
