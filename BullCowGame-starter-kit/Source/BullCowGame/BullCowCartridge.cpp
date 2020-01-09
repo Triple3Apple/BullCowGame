@@ -15,63 +15,7 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
-    /*
-    int32 a = 1;
-    int32 b = ++a;
-
-
-    PrintLine(TEXT("a = %i, b = %i"), a, b);
-    */
-
-    if (bGameOver)
-    {
-        ClearScreen();
-        SetupGame();
-    }
-    else  // checking player guess
-    {
-        if (Input == HiddenWord)
-        {
-            PrintLine(TEXT("Correct!"));
-            EndGame();
-        }
-        else
-        {
-            --PlayerLives;
-            PrintLine(TEXT("You have lost a life!"));
-            if (PlayerLives > 0)
-            {
-                if (HiddenWord.Len() != Input.Len())
-                {
-                    PrintLine(FString::Printf(TEXT("Sorry, try guessing again! \nYou have %i lives remaining"), PlayerLives));
-
-                    //PrintLine(FString::Printf(TEXT("Lives Remaining: %i"), PlayerLives));
-                    //EndGame();
-                }
-            }
-            else
-            {
-                PrintLine(TEXT("GAMEOVER, no more lives remaining!"));
-                EndGame();
-            }
-            
-            
-        }
-    }
-
-    
-    
-
-    // check if isogram
-    // check if it has the right number of characters
-
-    // decrement a life
-
-    // check if lives > 0
-    // if yes: guess again
-    //  - show lives left
-    // if no: show gameover and hiddenword then prompt to play again
-
+    ProcessGuess(Input);
 }
 
 void UBullCowCartridge::SetupGame()
@@ -90,4 +34,48 @@ void UBullCowCartridge::EndGame()
 {
     bGameOver = true;
     PrintLine(TEXT("Press ENTER to play again..."));
+}
+
+void UBullCowCartridge::ProcessGuess(FString Guess)
+{
+    if (bGameOver)
+    {
+        ClearScreen();
+        SetupGame();
+    }
+    else  // checking player guess
+    {
+        if (Guess == HiddenWord)
+        {
+            PrintLine(TEXT("Correct! You win!"));
+            EndGame();
+            return;     // early return so it does not read the other if statements
+        }
+        else
+        {
+            --PlayerLives;
+            PrintLine(TEXT("You have lost a life!"));
+            if (PlayerLives > 0)
+            {
+                if (HiddenWord.Len() != Guess.Len())
+                {
+                    PrintLine(FString::Printf(TEXT("Sorry the hidden word is %i characters \nlong, try guessing again! \nYou have %i lives remaining"),HiddenWord.Len(), PlayerLives));
+                    return;
+                }
+                else if (HiddenWord.Len() == Guess.Len())
+                {
+                    PrintLine(FString::Printf(TEXT("Correct word length but wrong word, \ntry guessing again! You have %i lives \nremaining"), PlayerLives));
+                    return;
+                }
+            }
+            else
+            {
+                ClearScreen();
+                PrintLine(TEXT("GAMEOVER, no more lives remaining!"));
+                PrintLine(TEXT("The hidden word was: %s"), *HiddenWord);
+                EndGame();
+                return;
+            }
+        }
+    }
 }
