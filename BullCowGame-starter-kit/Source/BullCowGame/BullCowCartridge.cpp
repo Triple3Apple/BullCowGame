@@ -28,6 +28,10 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("MOOOOOOOOO! Welcome to Bull Cows!\n"));
     PrintLine(FString::Printf(TEXT("You have %i lives"), PlayerLives));
     PrintLine(FString::Printf(TEXT("Press TAB and guess the %i letter \nword then press enter to continue..."), HiddenWord.Len()));
+
+    /*const TCHAR HW[] = TEXT("plums");
+    PrintLine(TEXT("Character 1 of the the hidden word is: %c"), HiddenWord[0]);
+    PrintLine(TEXT("The 4th character of HW is: %c"), HW[3]);*/
 }
 
 void UBullCowCartridge::EndGame()
@@ -62,11 +66,17 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
                     PrintLine(FString::Printf(TEXT("Sorry the hidden word is %i characters \nlong, try guessing again! \nYou have %i lives remaining"),HiddenWord.Len(), PlayerLives));
                     return;
                 }
+                else if (!IsIsogram(Guess))
+                {
+                    PrintLine(TEXT("No repeating letters allowed, \ntry guessing again!\nYou have %i lives remaining"), PlayerLives);
+                    return;
+                }
                 else if (HiddenWord.Len() == Guess.Len())
                 {
                     PrintLine(FString::Printf(TEXT("Correct word length but wrong word, \ntry guessing again! You have %i lives \nremaining"), PlayerLives));
                     return;
                 }
+                
             }
             else
             {
@@ -78,4 +88,37 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
             }
         }
     }
+}
+
+// returns true if isogram, false otherwise (checks for FIRST order isograms only)
+bool UBullCowCartridge::IsIsogram(FString Word)
+{
+    /*
+    
+    */
+    
+
+    for (int32 i = 0; i < Word.Len(); i++)
+    {
+        int32 CurrentIndex = i;
+        bool bFoundMatchingChar = false;
+        for (int32 j = 0; j < Word.Len(); j++)
+        {
+            if (CurrentIndex != j)      // to make sure we are not checking the letter/index we are on
+            {
+                if (Word[i] == Word[j])
+                {
+                    bFoundMatchingChar = true;
+                }
+            }
+
+        }
+
+        if (bFoundMatchingChar)
+        {
+            return false;   // if no matching letter found
+        }
+    }
+
+    return true;
 }
