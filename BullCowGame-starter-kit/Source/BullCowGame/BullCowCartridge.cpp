@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
 #include "BullCowCartridge.h"
-
-
-//FString HiddenWord = TEXT("stinky");        // BAD (will make it global!)
+#include "HiddenWordList.h"
 
 
 void UBullCowCartridge::BeginPlay() // When the game starts
@@ -91,34 +90,17 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
 }
 
 // returns true if isogram, false otherwise (checks for FIRST order isograms only)
-bool UBullCowCartridge::IsIsogram(FString Word)
+bool UBullCowCartridge::IsIsogram(const FString Word) const
 {
-    /*
-    
-    */
-    
-
     for (int32 i = 0; i < Word.Len(); i++)
     {
-        int32 CurrentIndex = i;
-        bool bFoundMatchingChar = false;
-        for (int32 j = 0; j < Word.Len(); j++)
+        for (int32 ComparisonIndex = i + 1; ComparisonIndex < Word.Len(); ComparisonIndex++)      // loop that compares Current Index ( i ) character to all the other charcaters at index ComparisonIndex
         {
-            if (CurrentIndex != j)      // to make sure we are not checking the letter/index we are on
+            if (Word[i] == Word[ComparisonIndex])
             {
-                if (Word[i] == Word[j])
-                {
-                    bFoundMatchingChar = true;
-                }
+                return false;   // if matching letter found, it is not a isogram, return false
             }
-
-        }
-
-        if (bFoundMatchingChar)
-        {
-            return false;   // if no matching letter found
         }
     }
-
     return true;
 }
